@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyBlogService.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -10,7 +11,13 @@ namespace MyBlogService.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            IEnumerable<Post> posts;
+            using (var db = _context)
+            {
+                posts =  db.Posts.ToList();
+            }
+
+            return View(posts);
         }
 
         public ActionResult About()
@@ -25,6 +32,14 @@ namespace MyBlogService.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+
+        private BlogServiceDbContext _context;
+
+        public HomeController()
+        {
+            _context = new BlogServiceDbContext();
         }
     }
 }
