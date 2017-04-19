@@ -15,8 +15,14 @@ namespace MyBlogService.Controllers
         private BlogServiceDbContext db = new BlogServiceDbContext();
 
         // GET: Posts
-        public ActionResult Index()
+        public ActionResult Index(string searchQuery)
         {
+            var posts = from p in db.Posts select p;
+            if (!String.IsNullOrEmpty(searchQuery))
+            {
+                posts = posts.Where(p => p.Title.Contains(searchQuery));
+            }
+
             return View(db.Posts.ToList());
         }
 
@@ -46,10 +52,19 @@ namespace MyBlogService.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Title,Content,CreatedDate")] Post post)
+        public ActionResult Create([Bind(Include = "Id,Title,Content,CreatedDate")] Post post, [Bind(Include="Id, Name, Family")] User author)
         {
             if (ModelState.IsValid)
             {
+                post.Author = new User()
+                {
+                    Name = author.Name,
+                    Family = !String.IsNullOrEmpty(author.Family) ? author.Family : "دهقانی"
+                };
+                if(Request.Files.Count > 0)
+                {
+                    return Content("FileName: " + Request.Files[0].ContentLength);
+                }
                 db.Posts.Add(post);
                 db.SaveChanges();
                 return RedirectToAction("Index");
