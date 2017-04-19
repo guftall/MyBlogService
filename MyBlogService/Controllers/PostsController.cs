@@ -15,8 +15,14 @@ namespace MyBlogService.Controllers
         private BlogServiceDbContext db = new BlogServiceDbContext();
 
         // GET: Posts
-        public ActionResult Index()
+        public ActionResult Index(string sQuery)
         {
+            var posts = from p in db.Posts select p;
+
+            if (String.IsNullOrEmpty(sQuery))
+            {
+                posts = posts.Where(q => q.Title.Contains(sQuery));
+            }
             return View(db.Posts.ToList());
         }
 
