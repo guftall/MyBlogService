@@ -11,13 +11,12 @@ namespace MyBlogService.Controllers
     {
         public ActionResult Index()
         {
-            IEnumerable<Post> posts;
             using (var db = _context)
             {
-                posts =  db.Posts.ToList();
-            }
+                var posts = db.Posts.ToList();
 
-            return View(posts);
+                return View(posts);
+            }
         }
 
         public ActionResult About()
